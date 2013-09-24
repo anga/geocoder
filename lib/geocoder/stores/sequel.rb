@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-require 'geocoder'
-require 'sequel'
-# require 'geocoder/geocoder/sql'
-# require 'geocoder/stores/base'
+require 'geocoder/sql'
+require 'geocoder/stores/base'
 
 ##
 # Add geocoding functionality to any ActiveRecord object.
 #
-
-require 'geocoder/geocoder/stores'
 module Geocoder::Store
   module Sequel
     include Base
