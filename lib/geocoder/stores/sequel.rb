@@ -1,5 +1,3 @@
-puts "AAAAAA"
- 
 # -*- coding: utf-8 -*-
 require 'geocoder'
 require 'sequel'
