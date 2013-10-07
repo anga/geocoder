@@ -143,7 +143,7 @@ module Geocoder::Store
         if using_sqlite?
           conditions = bounding_box_conditions
         else
-          conditions = [bounding_box_conditions + " AND #{distance} <= ?", radius]
+          conditions = bounding_box_conditions + " AND #{distance} <= #{radius}"
         end
         {
           :select => select_clause(options[:select],
