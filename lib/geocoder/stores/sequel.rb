@@ -32,20 +32,20 @@ module Geocoder::Store
         # Find all objects within a radius of the given location.
         # Location may be either a string to geocode or an array of
         # coordinates (<tt>[lat,lon]</tt>). Also takes an options hash
-        # (see Geocoder::Store::ActiveRecord::ClassMethods.near_scope_options
+        # (see Geocoder::Store::Sequel::ClassMethods.near_scope_options
         # for details).
         #
         def near(location, *args)
           latitude, longitude = Geocoder::Calculations.extract_coordinates(location)
           if Geocoder::Calculations.coordinates_present?(latitude, longitude)
-            options = near_scope_options(latitude, longitude, *args)
+            options = base.near_scope_options(latitude, longitude, *args)
             select(Sequel.lit(options[:select])).where(options[:conditions]).
               order(Sequel.lit(options[:order]))
           else
             # If no lat/lon given we don't want any results, but we still
             # need distance and bearing columns so you can add, for example:
             # .order("distance")
-            select(Sequel.lit(select_clause(nil, "NULL", "NULL"))).where(false_condition)
+            select(Sequel.lit(base.select_clause(nil, "NULL", "NULL"))).where(base.false_condition)
           end
         end
 
@@ -64,7 +64,7 @@ module Geocoder::Store
               full_column_name(geocoder_options[:longitude])
             ))
           else
-            select(Sequel.lit(select_clause(nil, "NULL", "NULL"))).where(false_condition)
+            select(Sequel.lit(base.select_clause(nil, "NULL", "NULL"))).where(base.false_condition)
           end
         end
       end
