@@ -40,7 +40,7 @@ module Geocoder::Store
           if Geocoder::Calculations.coordinates_present?(latitude, longitude)
             options = self.class.send(:near_scope_options, latitude, longitude, *args)
 
-            sql = "#{options[:select]} FROM #{table_name} WHERE #{options[:conditions]}"
+            sql = "#{options[:select]} FROM #{self.class.table_name} WHERE #{options[:conditions]}"
             sql += " ORDER BY #{options[:order]}" if options[:order].kind_of? String
             with_sql(sql)
           else
@@ -51,7 +51,7 @@ module Geocoder::Store
               :select => self.class.send(:select_clause, nil, "NULL", "NULL"),
               :conditions => self.class.send(:false_condition)
             }
-            sql = "#{options[:select]} FROM #{table_name} WHERE #{options[:conditions]}"
+            sql = "#{options[:select]} FROM #{self.class.table_name} WHERE #{options[:conditions]}"
             with_sql(sql)
           end
         end
@@ -75,7 +75,7 @@ module Geocoder::Store
               :select => self.class.send(:select_clause, nil, "NULL", "NULL"),
               :conditions => self.class.send(:false_condition)
             }
-            sql = "#{options[:select]} FROM #{table_name} WHERE #{options[:conditions]}"
+            sql = "#{options[:select]} FROM #{self.class.table_name} WHERE #{options[:conditions]}"
             with_sql(sql)
           end
         end
