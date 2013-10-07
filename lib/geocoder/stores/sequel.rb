@@ -39,13 +39,20 @@ module Geocoder::Store
           latitude, longitude = Geocoder::Calculations.extract_coordinates(location)
           if Geocoder::Calculations.coordinates_present?(latitude, longitude)
             options = self.class.send(:near_scope_options, latitude, longitude, *args)
-            select(::Sequel.lit(options[:select])).where(options[:conditions]).
-              order(::Sequel.lit(options[:order]))
+
+            sql = "#{options[:select]} FROM #{table_name} WHERE #{options[:conditions]}"
+            sql += " ORDER BY #{options[:order]}" if options[:order].kind_of? String
+            with_sql(sql)
           else
             # If no lat/lon given we don't want any results, but we still
             # need distance and bearing columns so you can add, for example:
             # .order("distance")
-            select(::Sequel.lit(self.class.send :select_clause, nil, "NULL", "NULL")).where(self.class.send(:false_condition))
+            options = {
+              :select => self.class.send(:select_clause, nil, "NULL", "NULL"),
+              :conditions => self.class.send(:false_condition)
+            }
+            sql = "#{options[:select]} FROM #{table_name} WHERE #{options[:conditions]}"
+            with_sql(sql)
           end
         end
 
@@ -64,7 +71,12 @@ module Geocoder::Store
               full_column_name(geocoder_options[:longitude])
             ))
           else
-            select(::Sequel.lit(self.class.send :select_clause, nil, "NULL", "NULL")).where(self.class.send(:false_condition))
+            options = {
+              :select => self.class.send(:select_clause, nil, "NULL", "NULL"),
+              :conditions => self.class.send(:false_condition)
+            }
+            sql = "#{options[:select]} FROM #{table_name} WHERE #{options[:conditions]}"
+            with_sql(sql)
           end
         end
       end
@@ -186,7 +198,7 @@ module Geocoder::Store
         if columns == :id_only
           return full_column_name(primary_key)
         elsif columns == :geo_only
-          clause = ""
+          clause = "*"
         else
           clause = (columns || full_column_name("*"))
         end
@@ -206,10 +218,8 @@ module Geocoder::Store
       # Expects conditions as an array or string. Returns array.
       #
       def add_exclude_condition(conditions, exclude)
-        conditions = [conditions] if conditions.is_a?(String)
         if exclude
-          conditions[0] << " AND #{full_column_name(primary_key)} != ?"
-          conditions << exclude.id
+          conditions += " AND #{full_column_name(primary_key)} != #{exclude.id}"
         end
         conditions
       end
