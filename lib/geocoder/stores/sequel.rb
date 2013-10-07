@@ -39,13 +39,13 @@ module Geocoder::Store
           latitude, longitude = Geocoder::Calculations.extract_coordinates(location)
           if Geocoder::Calculations.coordinates_present?(latitude, longitude)
             options = self.class.send(:near_scope_options, latitude, longitude, *args)
-            select(Sequel.lit(options[:select])).where(options[:conditions]).
-              order(Sequel.lit(options[:order]))
+            select(::Sequel.lit(options[:select])).where(options[:conditions]).
+              order(::Sequel.lit(options[:order]))
           else
             # If no lat/lon given we don't want any results, but we still
             # need distance and bearing columns so you can add, for example:
             # .order("distance")
-            select(Sequel.lit(self.class.send :select_clause, nil, "NULL", "NULL")).where(self.class.send(:false_condition))
+            select(::Sequel.lit(self.class.send :select_clause, nil, "NULL", "NULL")).where(self.class.send(:false_condition))
           end
         end
 
@@ -64,7 +64,7 @@ module Geocoder::Store
               full_column_name(geocoder_options[:longitude])
             ))
           else
-            select(Sequel.lit(self.class.send :select_clause, nil, "NULL", "NULL")).where(self.class.send(:false_condition))
+            select(::Sequel.lit(self.class.send :select_clause, nil, "NULL", "NULL")).where(self.class.send(:false_condition))
           end
         end
       end
