@@ -42,7 +42,7 @@ module Geocoder::Store
 
             sql = "#{options[:select]} FROM #{self.class.table_name} WHERE #{options[:conditions]}"
             sql += " ORDER BY #{options[:order]}" if options[:order].kind_of? String
-            with_sql(sql)
+            self.class.with_sql(sql)
           else
             # If no lat/lon given we don't want any results, but we still
             # need distance and bearing columns so you can add, for example:
@@ -52,7 +52,7 @@ module Geocoder::Store
               :conditions => self.class.send(:false_condition)
             }
             sql = "#{options[:select]} FROM #{self.class.table_name} WHERE #{options[:conditions]}"
-            with_sql(sql)
+            self.class.with_sql(sql)
           end
         end
 
@@ -76,7 +76,7 @@ module Geocoder::Store
               :conditions => self.class.send(:false_condition)
             }
             sql = "#{options[:select]} FROM #{self.class.table_name} WHERE #{options[:conditions]}"
-            with_sql(sql)
+            self.class.with_sql(sql)
           end
         end
       end
