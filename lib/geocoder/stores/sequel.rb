@@ -215,7 +215,8 @@ module Geocoder::Store
       end
 
       def using_sqlite?
-        connection.adapter_name.match /sqlite/i
+#         connection.adapter_name.match /sqlite/i
+        false
       end
 
       ##
